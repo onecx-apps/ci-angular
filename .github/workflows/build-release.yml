@@ -2,16 +2,31 @@ name: release
 
 on:
   workflow_call:
-
+    inputs:
+      helmEventTargetRepository:
+        description: 'Target repository'
+        default: ''
+        required: false
+        type: string
 jobs:
   docker:
-    uses: onecx-apps/ci-common/.github/workflows/docker-release.yml@v1
+    uses: onecx-apps/ci-common/.github/workflows/docker-release.yml@v2
     secrets: inherit
   helm:
-    uses: onecx-apps/ci-common/.github/workflows/helm-release.yml@v1
+    uses: onecx-apps/ci-common/.github/workflows/helm-release.yml@v2
     needs: docker
     secrets: inherit
+  helm-event:
+    if: |
+      !cancelled()
+      && needs.helm.result == 'success'
+      && inputs.helmEventTargetRepository != ''
+    uses: onecx-apps/ci-product/.github/workflows/helm-send-event.yml@v1
+    needs: [helm]
+    secrets: inherit
+    with:
+      targetRepository: ${{ inputs.helmEventTargetRepository }}
   changelog:
-    uses: onecx-apps/ci-common/.github/workflows/generate-changelog.yml@v1
+    uses: onecx-apps/ci-common/.github/workflows/generate-changelog.yml@v2
     needs: helm
     secrets: inherit

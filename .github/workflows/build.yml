@@ -17,7 +17,7 @@ jobs:
     uses: onecx-apps/ci-angular/.github/workflows/angular-build.yml@v1
     secrets: inherit
   docker:
-    uses: onecx-apps/ci-common/.github/workflows/docker-build.yml@v1
+    uses: onecx-apps/ci-common/.github/workflows/docker-build.yml@v2
     needs: angular
     secrets: inherit
     with:
@@ -31,7 +31,7 @@ jobs:
     needs: docker
     secrets: inherit
   helm:
-    uses: onecx-apps/ci-common/.github/workflows/helm-build.yml@v1
+    uses: onecx-apps/ci-common/.github/workflows/helm-build.yml@v2
     needs: docker
     secrets: inherit
     with:
